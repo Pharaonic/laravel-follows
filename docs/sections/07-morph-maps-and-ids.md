@@ -10,13 +10,28 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 public function boot()
 {
     Relation::morphMap([
-        'user' => \App\User::class,
-        'post' => \App\Post::class,
+        'user' => \App\Models\User::class,
+        'post' => \App\Models\Post::class,
     ]);
 }
 ```
 
-With this map a follow stores `user` and `post`, and `$follow->follower` resolves back to `App\User`. Register the map before you store follows: rows stored with class names are not rewritten when you add a map later, and lookups for `post` won't find rows stored as `App\Post`.
+With this map a follow stores `user` and `post`, and `$follow->follower` resolves back to `App\Models\User`. Register the map before you store follows: rows stored with class names are not rewritten when you add a map later, and lookups for `post` won't find rows stored as `App\Models\Post`.
+
+### Enforced morph maps
+
+With `Relation::enforceMorphMap()`, every model that follows or is followed needs an alias. Following with an unmapped model throws Laravel's `ClassMorphViolationException` before anything is written:
+
+```php
+Relation::enforceMorphMap([
+    'user' => \App\Models\User::class,
+    'post' => \App\Models\Post::class,
+]);
+
+$user->follow($product); // ClassMorphViolationException: No morph map defined for model [App\Models\Product].
+```
+
+### Type length
 
 Types are limited to 191 characters. A longer class name or alias throws an `InvalidArgumentException` before anything is written; register a shorter alias.
 

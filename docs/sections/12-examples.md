@@ -7,9 +7,11 @@ Send the state the user wants, so a double click can't undo itself, and return t
 - ===Routes
 
   ```php title="routes/web.php"
+  use App\Http\Controllers\PostFollowController;
+
   Route::middleware('auth')->group(function () {
-      Route::post('posts/{post}/follow', 'PostFollowController@store');
-      Route::delete('posts/{post}/follow', 'PostFollowController@destroy');
+      Route::post('posts/{post}/follow', [PostFollowController::class, 'store']);
+      Route::delete('posts/{post}/follow', [PostFollowController::class, 'destroy']);
   });
   ```
 
@@ -18,7 +20,7 @@ Send the state the user wants, so a double click can't undo itself, and return t
   ```php title="app/Http/Controllers/PostFollowController.php"
   namespace App\Http\Controllers;
 
-  use App\Post;
+  use App\Models\Post;
   use Illuminate\Http\Request;
 
   class PostFollowController extends Controller
@@ -71,7 +73,7 @@ $follows = $request->user()->followings()->with('followable')->latest()->paginat
 
 `User` uses both traits, so users can follow users.
 
-```php title="app/User.php"
+```php title="app/Models/User.php"
 class User extends Authenticatable
 {
     use CanFollow, HasFollowers;

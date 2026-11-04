@@ -2,8 +2,8 @@
 
 Add `CanFollow` to the model that follows and `HasFollowers` to the model that is followed.
 
-```php title="app/User.php"
-namespace App;
+```php title="app/Models/User.php"
+namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Pharaonic\Laravel\Follows\Concerns\CanFollow;
@@ -14,8 +14,8 @@ class User extends Authenticatable
 }
 ```
 
-```php title="app/Post.php"
-namespace App;
+```php title="app/Models/Post.php"
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Pharaonic\Laravel\Follows\Concerns\HasFollowers;
@@ -92,6 +92,6 @@ $bob->followedBy($alice);          // true
 The writes need both models saved, because a follow stores their keys. `follow()`, `unfollow()`, `toggleFollow()`, `followBy()` and `unfollowBy()` throw an `InvalidArgumentException` before touching the database when either model is unsaved. The reads `isFollowing()` and `followedBy()` return false, and `whereFollowedBy()` matches nothing.
 
 ```php
-$user->follow(new Post); // InvalidArgumentException: The followable [App\Post] is not saved: ...
+$user->follow(new Post); // InvalidArgumentException: The followable [App\Models\Post] is not saved: ...
 $user->isFollowing(new Post); // false
 ```

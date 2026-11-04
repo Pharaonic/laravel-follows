@@ -8,7 +8,7 @@ Another package, usually `pharaonic/laravel-users`, created a `follows` table. S
 
 The pair was already followed: `follow()` returns whether this call created the follow. Use `isFollowing()` for the current state. A `creating` listener on the `Follow` model that returns false also makes `follow()` return false.
 
-### `The follower [App\User] is not saved`
+### `The follower [App\Models\User] is not saved`
 
 A write was called with a model that isn't saved. Save it first, or check `$model->exists`.
 
@@ -30,4 +30,4 @@ The models were deleted with a query (`Post::where(...)->delete()`), which skips
 
 ### Follows are missing after adding a morph map
 
-Rows stored before the map hold class names, and the package now looks for the alias. Update those rows deliberately, type by type, for example `UPDATE follows SET followable_type = 'post' WHERE followable_type = 'App\\Post';`.
+Rows stored before the map hold class names, and the package now looks for the alias. Update those rows deliberately, type by type, for example `UPDATE follows SET followable_type = 'post' WHERE followable_type = 'App\\Models\\Post';`.

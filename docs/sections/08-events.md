@@ -19,7 +19,7 @@ class NotifyAuthor
 {
     public function handle(FollowCreated $event)
     {
-        if ($event->followable instanceof \App\Post) {
+        if ($event->followable instanceof \App\Models\Post) {
             $event->followable->author->notify(new PostFollowed($event->follower));
         }
     }
