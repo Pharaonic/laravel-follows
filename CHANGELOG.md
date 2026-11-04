@@ -1,0 +1,20 @@
+# Changelog
+
+All notable changes to this project are documented here.
+
+## 6.0.0 - Unreleased
+
+### Added
+
+- `CanFollow` for the model that follows: `follow()`, `unfollow()`, `isFollowing()`, `toggleFollow()`, and the `followings()` relation.
+- `HasFollowers` for the model that is followed: `followBy()`, `unfollowBy()`, `followedBy()`, the `followers()` relation, and the `whereFollowedBy()` scope. A model can use both traits.
+- The `Follow` model with `follower()` and `followable()` relations and `whereFollower()` and `whereFollowable()` scopes.
+- A `follows` table whose unique index keeps each follower and followable pair to one row, with string ids so integer, UUID, and ULID keys share it.
+- `FollowCreated` and `FollowRemoved` events, dispatched only when a call inserts or deletes a follow.
+- Follows are deleted with the model that gave or received them, and kept when it is only soft deleted.
+- `pharaonic.follows.table` and `pharaonic.follows.cleanup_on_delete` settings.
+
+### Compatibility
+
+- Laravel 6 on PHP 8.0.
+- Replaces the follows of `pharaonic/laravel-users`, whose methods return different values and whose table needs converting first.
