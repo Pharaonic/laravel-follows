@@ -99,4 +99,4 @@ public function handle(FollowCreated $event)
 }
 ```
 
-Register it for `Pharaonic\Laravel\Follows\Events\FollowCreated` in your `EventServiceProvider`.
+Laravel discovers it from the `FollowCreated` type of `handle()`; see [Events](#events) to register it yourself.
