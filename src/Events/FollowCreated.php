@@ -14,6 +14,5 @@ final class FollowCreated
         public Follow $follow,
         public Model $follower,
         public Model $followable,
-    ) {
-    }
+    ) {}
 }

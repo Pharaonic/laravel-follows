@@ -123,7 +123,7 @@ function deadlockOnCreating(int $times): stdClass
         $pdo = new PDOException($message);
         $pdo->errorInfo = ['40001', 1213, 'Deadlock found when trying to get lock; try restarting transaction'];
 
-        throw new QueryException('insert into `follows` ...', [], $pdo);
+        throw new QueryException('testing', 'insert into `follows` ...', [], $pdo);
     });
 
     return $attempts;

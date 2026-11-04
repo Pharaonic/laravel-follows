@@ -7,7 +7,7 @@ test('only unique violations are recognized', function (string $sqlState, ?int $
     $pdo = new PDOException($message);
     $pdo->errorInfo = [$sqlState, $driverCode, $message];
 
-    expect(FollowManager::isUniqueViolation(new QueryException('insert into "follows" ...', [], $pdo)))->toBe($unique);
+    expect(FollowManager::isUniqueViolation(new QueryException('testing', 'insert into "follows" ...', [], $pdo)))->toBe($unique);
 })->with([
     'mysql duplicate entry' => ['23000', 1062, "SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'x' for key 'follows_unique_pair'", true],
     'mysql not null' => ['23000', 1048, "SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'follower_id' cannot be null", false],
@@ -26,7 +26,7 @@ test('only deadlocks are recognized', function (string $sqlState, ?int $driverCo
     $pdo = new PDOException($message);
     $pdo->errorInfo = [$sqlState, $driverCode, $message];
 
-    expect(FollowManager::isDeadlock(new QueryException('insert into "follows" ...', [], $pdo)))->toBe($deadlock);
+    expect(FollowManager::isDeadlock(new QueryException('testing', 'insert into "follows" ...', [], $pdo)))->toBe($deadlock);
 })->with([
     'mysql deadlock' => ['40001', 1213, 'SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock', true],
     'mysql lock wait timeout' => ['HY000', 1205, 'SQLSTATE[HY000]: General error: 1205 Lock wait timeout exceeded', false],
