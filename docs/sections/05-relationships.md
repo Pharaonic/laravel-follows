@@ -20,8 +20,8 @@ use Pharaonic\Laravel\Follows\Models\Follow;
 
 $follow = $post->followers()->latest()->first();
 
-$follow->follower;    // App\User
-$follow->followable;  // App\Post
+$follow->follower;    // App\Models\User
+$follow->followable;  // App\Models\Post
 $follow->created_at;
 
 $user->followings()->with('followable')->latest()->get()
