@@ -51,6 +51,8 @@ class Follow extends Model
 
     /**
      * The model that gave the follow.
+     *
+     * @return MorphTo<Model, $this>
      */
     public function follower(): MorphTo
     {
@@ -59,6 +61,8 @@ class Follow extends Model
 
     /**
      * The model that received the follow.
+     *
+     * @return MorphTo<Model, $this>
      */
     public function followable(): MorphTo
     {
@@ -67,6 +71,8 @@ class Follow extends Model
 
     /**
      * Only the follows given by the follower.
+     *
+     * @param  Builder<Follow>  $query
      */
     public function scopeWhereFollower(Builder $query, Model $follower): void
     {
@@ -75,6 +81,8 @@ class Follow extends Model
 
     /**
      * Only the follows received by the followable.
+     *
+     * @param  Builder<Follow>  $query
      */
     public function scopeWhereFollowable(Builder $query, Model $followable): void
     {
