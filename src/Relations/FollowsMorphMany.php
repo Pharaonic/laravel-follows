@@ -26,8 +26,8 @@ use Pharaonic\Laravel\Follows\Support\FollowManager;
 final class FollowsMorphMany extends MorphMany
 {
     /**
-     * Declared here so PHPStan 2.1.0, the line's lowest, infers TDeclaringModel
-     * from `new FollowsMorphMany(...)`: it does not read the inherited constructor.
+     * Declared here so PHPStan infers TDeclaringModel from `new FollowsMorphMany(...)`:
+     * PHPStan 2.1.0 does not read it from the inherited constructor.
      *
      * @param  Builder<Follow>  $query
      * @param  TDeclaringModel  $parent
