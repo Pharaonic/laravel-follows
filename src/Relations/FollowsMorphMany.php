@@ -4,8 +4,10 @@ namespace Pharaonic\Laravel\Follows\Relations;
 
 use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Stringable;
+use Pharaonic\Laravel\Follows\Models\Follow;
+use Pharaonic\Laravel\Follows\Support\FollowManager;
 
 /**
  * The follows relation of a follower or followable model.
@@ -16,9 +18,28 @@ use Stringable;
  * and SQLite the string comparison is what lets the unique index be used.
  *
  * @internal
+ *
+ * @template TDeclaringModel of Model
+ *
+ * @extends MorphMany<Follow, TDeclaringModel>
  */
 final class FollowsMorphMany extends MorphMany
 {
+    /**
+     * Declared here so PHPStan 2.1.0, the line's lowest, infers TDeclaringModel
+     * from `new FollowsMorphMany(...)`: it does not read the inherited constructor.
+     *
+     * @param  Builder<Follow>  $query
+     * @param  TDeclaringModel  $parent
+     * @param  string  $type
+     * @param  string  $id
+     * @param  string  $localKey
+     */
+    public function __construct(Builder $query, Model $parent, $type, $id, $localKey)
+    {
+        parent::__construct($query, $parent, $type, $id, $localKey);
+    }
+
     /**
      * The parent key, as the string the follows table stores.
      *
@@ -28,13 +49,13 @@ final class FollowsMorphMany extends MorphMany
     {
         $key = parent::getParentKey();
 
-        return is_int($key) || is_string($key) || $key instanceof Stringable ? (string) $key : $key;
+        return FollowManager::keyToString($key) ?? $key;
     }
 
     /**
      * Constrain eager loading to the parents' keys, as strings.
      *
-     * @param  array<int, \Illuminate\Database\Eloquent\Model>  $models
+     * @param  array<int, TDeclaringModel>  $models
      * @return void
      */
     public function addEagerConstraints(array $models)
@@ -42,8 +63,10 @@ final class FollowsMorphMany extends MorphMany
         $keys = [];
 
         foreach ($this->getKeys($models, $this->localKey) as $key) {
-            if (is_int($key) || is_string($key) || $key instanceof Stringable) {
-                $keys[] = (string) $key;
+            $key = FollowManager::keyToString($key);
+
+            if ($key !== null) {
+                $keys[] = $key;
             }
         }
 
@@ -54,8 +77,10 @@ final class FollowsMorphMany extends MorphMany
     /**
      * The subquery behind has(), whereHas() and withCount().
      *
+     * @param  Builder<Follow>  $query
+     * @param  Builder<TDeclaringModel>  $parentQuery
      * @param  mixed  $columns
-     * @return Builder
+     * @return Builder<Follow>
      */
     public function getRelationExistenceQuery(Builder $query, Builder $parentQuery, $columns = ['*'])
     {

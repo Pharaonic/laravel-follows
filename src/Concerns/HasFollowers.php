@@ -5,6 +5,7 @@ namespace Pharaonic\Laravel\Follows\Concerns;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Pharaonic\Laravel\Follows\Models\Follow;
 use Pharaonic\Laravel\Follows\Support\FollowManager;
 
 /**
@@ -24,6 +25,8 @@ trait HasFollowers
 
     /**
      * The follows this model received.
+     *
+     * @return MorphMany<Follow, $this>
      */
     public function followers(): MorphMany
     {
@@ -56,6 +59,8 @@ trait HasFollowers
 
     /**
      * Only the models the follower follows.
+     *
+     * @param  Builder<static>  $query
      */
     public function scopeWhereFollowedBy(Builder $query, Model $follower): void
     {

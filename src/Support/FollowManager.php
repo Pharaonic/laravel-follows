@@ -93,6 +93,11 @@ final class FollowManager
 
     /**
      * The follows given (follower) or received (followable) by the model.
+     *
+     * @template TDeclaringModel of Model
+     *
+     * @param  TDeclaringModel  $parent
+     * @return MorphMany<Follow, TDeclaringModel>
      */
     public static function relation(Model $parent, string $side): MorphMany
     {
@@ -110,6 +115,10 @@ final class FollowManager
 
     /**
      * Limit a follows query to one follower or followable. An unsaved model matches nothing.
+     *
+     * @template TModel of Model
+     *
+     * @param  Builder<TModel>  $query
      */
     public static function constrain(Builder $query, string $side, Model $model): void
     {
@@ -354,8 +363,14 @@ final class FollowManager
      */
     private static function key(Model $model): ?string
     {
-        $key = $model->getKey();
+        return self::keyToString($model->getKey());
+    }
 
+    /**
+     * A key as the string the follows table stores, or null when it is not a usable key.
+     */
+    public static function keyToString(mixed $key): ?string
+    {
         if (! is_int($key) && ! is_string($key) && ! $key instanceof Stringable) {
             return null;
         }

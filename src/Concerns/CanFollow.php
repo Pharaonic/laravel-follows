@@ -4,6 +4,7 @@ namespace Pharaonic\Laravel\Follows\Concerns;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Pharaonic\Laravel\Follows\Models\Follow;
 use Pharaonic\Laravel\Follows\Support\FollowManager;
 
 /**
@@ -23,6 +24,8 @@ trait CanFollow
 
     /**
      * The follows this model gave.
+     *
+     * @return MorphMany<Follow, $this>
      */
     public function followings(): MorphMany
     {
