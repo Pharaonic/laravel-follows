@@ -15,6 +15,5 @@ final class FollowRemoved
         public Follow $follow,
         public Model $follower,
         public Model $followable,
-    ) {
-    }
+    ) {}
 }
