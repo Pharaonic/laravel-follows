@@ -51,7 +51,7 @@ final class FollowManager
      */
     public static function unfollow(Model $follower, Model $followable): bool
     {
-        $follow = Follow::query()->useWritePdo()->where(self::pair($follower, $followable))->first();
+        $follow = self::findPair(self::pair($follower, $followable));
 
         return $follow instanceof Follow && self::remove($follow, $follower, $followable);
     }
@@ -221,7 +221,7 @@ final class FollowManager
                     : $follow->save();
             } catch (QueryException $exception) {
                 if (self::isUniqueViolation($exception)) {
-                    $existing = Follow::query()->useWritePdo()->where($pair)->first();
+                    $existing = self::findPair($pair);
 
                     if ($existing instanceof Follow) {
                         return [$existing, false];
@@ -277,6 +277,20 @@ final class FollowManager
         }
 
         return $deleted;
+    }
+
+    /**
+     * The pair's follow, read from the write connection so a lagging replica
+     * can't hide a row the statement before just wrote or kept.
+     *
+     * @param  array{follower_type: string, follower_id: string, followable_type: string, followable_id: string}  $pair
+     */
+    private static function findPair(array $pair): ?Follow
+    {
+        $query = Follow::query()->where($pair);
+        $query->getQuery()->useWritePdo();
+
+        return $query->first();
     }
 
     /**
