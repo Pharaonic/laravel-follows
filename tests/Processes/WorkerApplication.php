@@ -1,6 +1,6 @@
 <?php
 
-namespace Pharaonic\Laravel\Follows\Tests\Concurrency;
+namespace Pharaonic\Laravel\Follows\Tests\Processes;
 
 use Pharaonic\Laravel\Follows\Tests\TestCase;
 

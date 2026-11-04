@@ -36,7 +36,8 @@ Configuration keys (`pharaonic.follows.*`), publish tags, and registered Blade, 
 - Ids are stored as strings (`varchar(64)`), so the follows relations compare the parent key as a string in `has()`, `whereHas()`, and `withCount()` (`FollowsMorphMany`): PostgreSQL refuses `bigint = varchar` and `uuid = varchar`. MySQL uses `CONCAT()` rather than `CAST()`, which fails when the connection collation differs from the table's.
 - Events are dispatched right after the write, inside the caller's transaction when there is one, because `ShouldDispatchAfterCommit` needs Laravel 10.30.
 - `phpstan.neon.dist` also analyses `tests/Fixtures`: PHPStan analyses a trait only through a class that uses it.
-- `ConcurrencyTest` runs separate PHP processes against a shared database: a SQLite file by default, MySQL or PostgreSQL through the `FOLLOWS_DB*` environment variables (`.github/workflows/databases.yml`).
+- `ConcurrencyTest` runs separate PHP processes (`tests/Processes/worker.php`) against a shared database: a SQLite file by default, MySQL or PostgreSQL through the `FOLLOWS_DB*` environment variables (`.github/workflows/databases.yml`).
+- The published-migration test needs a process where the migration class was never declared. `6.x` runs it as a PHPUnit class in separate processes; Pest cannot, so later lines run `tests/Processes/published-migration.php` as a subprocess.
 
 ## Branch notes
 
