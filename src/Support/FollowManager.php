@@ -212,7 +212,11 @@ final class FollowManager
                     : $follow->save();
             } catch (QueryException $exception) {
                 if (self::isUniqueViolation($exception)) {
-                    $existing = Follow::query()->useWritePdo()->where($pair)->first();
+                    // A locking read: inside a transaction, a plain read on MySQL
+                    // (REPEATABLE READ) returns the snapshot the transaction started
+                    // from and misses a follow another request committed since. The
+                    // refused insert already holds that lock.
+                    $existing = Follow::query()->useWritePdo()->where($pair)->sharedLock()->first();
 
                     if ($existing instanceof Follow) {
                         return [$existing, false];
