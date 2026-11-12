@@ -37,6 +37,37 @@ test('a follow written by another connection is reported as already followed', f
     Event::assertNotDispatched(FollowCreated::class);
 });
 
+test('a follow committed during the callers transaction is found, not thrown', function () {
+    if (DB::connection()->getDriverName() === 'sqlite') {
+        $this->markTestSkipped('SQLite lets one connection write at a time.');
+    }
+
+    $user = User::create();
+    $post = Post::create();
+    $this->app['config']->set('database.connections.other', $this->app['config']->get('database.connections.testing'));
+
+    DB::transaction(function () use ($user, $post) {
+        // MySQL (REPEATABLE READ) takes the transaction's snapshot at its first read.
+        $this->assertFalse($user->isFollowing($post));
+
+        DB::connection('other')->table('follows')->insert([
+            'follower_type' => User::class,
+            'follower_id' => (string) $user->getKey(),
+            'followable_type' => Post::class,
+            'followable_id' => (string) $post->getKey(),
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+
+        $this->assertFalse($user->follow($post));
+        $this->assertFalse($user->toggleFollow($post));
+    });
+    DB::disconnect('other');
+
+    $this->assertFalse($user->isFollowing($post));
+    $this->assertSame(0, Follow::query()->count());
+});
+
 test('a violation of another unique index is not swallowed', function () {
     Schema::table('follows', function (Blueprint $table) {
         $table->unique(['follower_type', 'follower_id'], 'follows_one_per_follower');
