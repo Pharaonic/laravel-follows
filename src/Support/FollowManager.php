@@ -221,7 +221,7 @@ final class FollowManager
                     : $follow->save();
             } catch (QueryException $exception) {
                 if (self::isUniqueViolation($exception)) {
-                    $existing = self::findPair($pair);
+                    $existing = self::findPair($pair, true);
 
                     if ($existing instanceof Follow) {
                         return [$existing, false];
@@ -283,12 +283,21 @@ final class FollowManager
      * The pair's follow, read from the write connection so a lagging replica
      * can't hide a row the statement before just wrote or kept.
      *
+     * With $refused, the unique index just refused the pair's insert. Inside a
+     * transaction, a plain read on MySQL (REPEATABLE READ) returns the snapshot
+     * the transaction started from, which misses a row another request committed
+     * since; a locking read returns it. The refused insert already holds that lock.
+     *
      * @param  array{follower_type: string, follower_id: string, followable_type: string, followable_id: string}  $pair
      */
-    private static function findPair(array $pair): ?Follow
+    private static function findPair(array $pair, bool $refused = false): ?Follow
     {
         $query = Follow::query()->where($pair);
         $query->getQuery()->useWritePdo();
+
+        if ($refused && $query->getQuery()->getConnection()->transactionLevel() > 0) {
+            $query->sharedLock();
+        }
 
         return $query->first();
     }
