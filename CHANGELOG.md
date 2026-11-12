@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## 6.0.1 - Unreleased
+
+### Fixed
+
+- Inside a database transaction, `follow()`, `followBy()` and `toggleFollow()` threw the unique index violation when another request had committed the same follow after the transaction's first read (MySQL's REPEATABLE READ). They now find that follow with a locking read and return false, as they do outside a transaction.
+
 ## 6.0.0 - 2026-11-05
 
 ### Added
